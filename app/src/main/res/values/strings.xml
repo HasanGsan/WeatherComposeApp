@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">WeatherComposeApp</string>
+
+    <string name="request_button_title">СДЕЛАТЬ НОВЫЙ ЗАПРОС</string>
+    <string name="result_button_title">ОЦЕНИТЬ</string>
+
+    <string name="input_weather_name">Погода</string>
+    <string name="input_city_name">Город</string>
+    <string name="input_degrees_name">Температура (&#176;C)</string>
+
+    <string name="historyCard_title">Недавно вы искали:</string>
+    <string name="historyCard_description">Здесь появятся ваши предыдущие запросы</string>
+
+    <string name="screen_news_name">Экран новостей</string>
+    <string name="screen_gallery_name">Экран галереи</string>
+
+</resources>
