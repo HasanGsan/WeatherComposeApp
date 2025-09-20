@@ -38,7 +38,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.weathercomposeapp.ui.components.data.navigationData.BottomNavItem
 import com.example.weathercomposeapp.ui.theme.WeatherComposeAppTheme
 import com.example.weathercomposeapp.R
-import com.example.weathercomposeapp.ui.components.screens.GalleryScreen
+import com.example.weathercomposeapp.ui.components.screens.FavoriteScreen
 import com.example.weathercomposeapp.ui.components.screens.NewsScreen
 import com.example.weathercomposeapp.ui.components.screens.WeatherScreen
 import com.example.weathercomposeapp.ui.navigation.Screen
@@ -83,12 +83,12 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.WEATHER.name,
+            startDestination = Screen.NEWS.name,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.WEATHER.name) { WeatherScreen() }
             composable(Screen.NEWS.name) { NewsScreen() }
-            composable(Screen.GALLERY.name) { GalleryScreen() }
+            composable(Screen.FAVORITE.name) { FavoriteScreen() }
         }
     }
 }
@@ -107,9 +107,9 @@ fun BottomNavigationBar(navController: androidx.navigation.NavController) {
             route = Screen.NEWS.name
         ),
         BottomNavItem(
-            title = "Галерея",
-            image = painterResource(R.drawable.ic_gallery),
-            route = Screen.GALLERY.name
+            title = "Избранное",
+            image = painterResource(R.drawable.ic_favorite_black),
+            route = Screen.FAVORITE.name
         )
     )
 

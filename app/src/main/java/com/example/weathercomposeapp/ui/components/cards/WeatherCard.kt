@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,12 +29,13 @@ import com.example.weathercomposeapp.ui.theme.BlackGrayBackground
 import com.example.weathercomposeapp.ui.theme.BoxColor
 import com.example.weathercomposeapp.R
 
+
 @Composable
 fun WeatherCard(
     city: String,
     degrees: String,
-    modifier: Modifier,
     weatherDescription: String,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = Modifier
@@ -49,7 +51,6 @@ fun WeatherCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(
                 modifier = Modifier
                     .border(
@@ -67,8 +68,7 @@ fun WeatherCard(
             }
 
             Row(
-                modifier = Modifier
-                    .padding(end = 12.dp),
+                modifier = Modifier.padding(end = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -77,7 +77,6 @@ fun WeatherCard(
                     tint = Color.White,
                     modifier = Modifier.size(16.dp),
                     )
-
                 Text(
                     text = degrees,
                     color = Color.White,
@@ -89,9 +88,9 @@ fun WeatherCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Divider(
-            color = BoxColor,
-            thickness = 1.dp
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = BoxColor
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -101,8 +100,5 @@ fun WeatherCard(
             color = Color.White,
             fontSize = 16.sp
         )
-
     }
-
-
 }

@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weathercomposeapp.ui.components.data.WeatherData
+import com.example.weathercomposeapp.ui.components.data.models.WeatherData
 import com.example.weathercomposeapp.ui.theme.BoxColor
 import com.example.weathercomposeapp.R
 import com.example.weathercomposeapp.ui.theme.historyBoxBackground
@@ -41,9 +41,7 @@ fun SearchHistoryCard(
         color = Color.White,
         fontSize = 18.sp,
         textAlign = TextAlign.Start,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 8.dp)
+        modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
     )
 
     Spacer(Modifier.height(32.dp))
@@ -100,7 +98,6 @@ fun HistoryItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Box(
                 modifier = Modifier
                     .border(
@@ -110,7 +107,6 @@ fun HistoryItem(
                     )
                     .padding(horizontal = 4.dp, vertical = 2.dp)
             ) {
-
                 Text(
                     text = weatherData.city.uppercase(),
                     color = Color.White,
@@ -118,8 +114,7 @@ fun HistoryItem(
                 )
             }
             Row(
-                modifier = Modifier
-                    .padding(end = 12.dp),
+                modifier = Modifier.padding(end = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -128,7 +123,6 @@ fun HistoryItem(
                     tint = Color.White,
                     modifier = Modifier.size(12.dp),
                 )
-
                 Text(
                     text = weatherData.degrees,
                     color = Color.White,

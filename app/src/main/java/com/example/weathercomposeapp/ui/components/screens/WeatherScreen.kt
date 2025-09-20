@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,10 +33,12 @@ import com.example.weathercomposeapp.ui.components.viewmodel.WeatherViewModel
 import com.example.weathercomposeapp.ui.theme.BlackBackground
 import com.example.weathercomposeapp.R
 
+@Preview
 @Composable
 fun WeatherScreen(){
     val viewModel = viewModel<WeatherViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+    val weatherData by viewModel.weatherData.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
 
     Column(
@@ -45,14 +48,14 @@ fun WeatherScreen(){
             .background(BlackBackground)
             .padding(start = 10.dp, end = 10.dp),
     ) {
+        Spacer(Modifier.height(24.dp))
+
         Text(
             text = stringResource(R.string.input_weather_name),
             color = Color.White,
             fontSize = 24.sp,
             textAlign = TextAlign.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
         )
 
         Spacer(Modifier.height(32.dp))
@@ -65,15 +68,15 @@ fun WeatherScreen(){
                 Box{
                     Column {
                         CityInput(
-                            city = uiState.city,
+                            city = weatherData.city,
                             modifier = Modifier,
                             onValueChange = { viewModel.updateCity(it) }
                         )
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         DegreesInput(
-                            degrees = uiState.degrees,
+                            degrees = weatherData.degrees,
                             modifier = Modifier,
                             onValueChange = { viewModel.updateDegrees(it)}
                         )
@@ -81,9 +84,9 @@ fun WeatherScreen(){
                 }
             } else {
                 WeatherCard(
-                    city = uiState.city,
-                    degrees = uiState.degrees,
-                    weatherDescription = uiState.weatherDescription,
+                    city = weatherData.city,
+                    degrees = weatherData.degrees,
+                    weatherDescription = weatherData.weatherDescription,
                     modifier = Modifier,
                 )
             }
