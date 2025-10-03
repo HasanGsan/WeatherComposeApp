@@ -40,6 +40,10 @@ android {
 }
 
 dependencies {
+    // Decompose
+    implementation("com.arkivanov.decompose:decompose:2.1.0")
+    implementation("com.arkivanov.decompose:extensions-compose-jetpack:2.1.0")
+
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.navigation:navigation-compose:2.9.4")
