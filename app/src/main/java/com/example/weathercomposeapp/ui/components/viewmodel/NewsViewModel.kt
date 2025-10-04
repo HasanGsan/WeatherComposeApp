@@ -62,7 +62,7 @@ class NewsViewModel(
 
     fun toggleFavorite(newsId: String) {
         viewModelScope.launch {
-            repository.addFavorite(newsId)  // ← Только добавляет, не переключает!
+            repository.addFavorite(newsId)
             _uiState.update { current ->
                 val updated = current.newsItems.map { item ->
                     if (item.newsData.id == newsId) item.copy(isFavorite = !item.isFavorite) else item
