@@ -1,5 +1,6 @@
 package com.example.weathercomposeapp.ui.components.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,13 +35,23 @@ import com.example.weathercomposeapp.ui.theme.BlackBackground
 import com.example.weathercomposeapp.R
 import com.example.weathercomposeapp.ui.components.cards.recycler.cards.newsScreen.NewsCard
 import com.example.weathercomposeapp.ui.components.cards.recycler.cards.newsScreen.PreviewNewsCard
+import com.example.weathercomposeapp.ui.components.data.local.DatabaseProvider
+import com.example.weathercomposeapp.ui.components.data.local.factory.NewsViewModelFactory
+import com.example.weathercomposeapp.ui.components.data.repository.RoomNewsRepository
 import com.example.weathercomposeapp.ui.components.viewmodel.NewsViewModel
 import com.example.weathercomposeapp.ui.theme.WhiteColor
 
 @Preview
 @Composable
-fun NewsScreen() {
-    val viewModel = viewModel<NewsViewModel>()
+fun NewsScreen(
+    context: Context = LocalContext.current
+) {
+    val db = DatabaseProvider.getDatabase(context)
+    val repository = RoomNewsRepository(db.newsStatusDao())
+    val viewModel: NewsViewModel = viewModel(
+        factory = NewsViewModelFactory(repository)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
 

@@ -1,5 +1,6 @@
 package com.example.weathercomposeapp.ui.components.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,14 +33,25 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weathercomposeapp.ui.theme.BlackBackground
 import com.example.weathercomposeapp.R
-import com.example.weathercomposeapp.ui.components.cards.recycler.cards.favoriteScreen.FavoriteCard
+import com.example.weathercomposeapp.ui.components.cards.recycler.cards.favoriteScreen.favoriteCard
+import com.example.weathercomposeapp.ui.components.data.local.DatabaseProvider
+import com.example.weathercomposeapp.ui.components.data.local.factory.FavoriteViewModelFactory
+import com.example.weathercomposeapp.ui.components.data.repository.RoomNewsRepository
 import com.example.weathercomposeapp.ui.components.viewmodel.FavoriteViewModel
 import com.example.weathercomposeapp.ui.theme.BoxColor
 import com.example.weathercomposeapp.ui.theme.TagPostColor
 
 @Preview
 @Composable
-fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel()){
+fun FavoriteScreen(context: Context = LocalContext.current){
+
+    val db = DatabaseProvider.getDatabase(context)
+    val repository = RoomNewsRepository(db.newsStatusDao())
+
+    val viewModel: FavoriteViewModel = viewModel(
+        factory = FavoriteViewModelFactory(repository)
+    )
+
     val uiState = viewModel.uiState.collectAsState().value
     val selectedTag = viewModel.selectedTag.collectAsState().value
     val tags = viewModel.allTags.collectAsState().value
@@ -100,8 +113,8 @@ fun FavoriteScreen(viewModel: FavoriteViewModel = viewModel()){
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(uiState.newsItems) { newsItem ->
-                FavoriteCard(
+            items(uiState.newsItems, key = { it.newsData.id }) { newsItem ->
+                favoriteCard(
                     newsItem = newsItem,
                     onToggleFavorite = { id ->
                         viewModel.toggleFavorite(id)

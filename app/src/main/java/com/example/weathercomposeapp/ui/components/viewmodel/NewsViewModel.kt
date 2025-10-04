@@ -1,9 +1,11 @@
 package com.example.weathercomposeapp.ui.components.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weathercomposeapp.ui.components.data.repository.FakeNewsRepository
 import com.example.weathercomposeapp.ui.components.data.repository.NewsRepository
+import com.example.weathercomposeapp.ui.components.data.repository.RoomNewsRepository
 import com.example.weathercomposeapp.ui.components.data.uiState.NewsUiState
 import com.example.weathercomposeapp.ui.components.data.uiState.items.NewsItemUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NewsViewModel(
-    private val repository: NewsRepository = FakeNewsRepository
+    private val repository: NewsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NewsUiState(isLoading = true))
@@ -30,8 +32,8 @@ class NewsViewModel(
                 val items = list.map { newsData ->
                     NewsItemUiState(
                         newsData = newsData,
-                        isFavorite = repository.getFavorites()
-                            .any { favorite -> favorite.id == newsData.id }
+                        isRead = repository.isRead(newsData.id),
+                        isFavorite = repository.isFavorite(newsData.id)
                     )
                 }
                 _uiState.value = NewsUiState(isLoading = false, newsItems = items)
@@ -46,17 +48,21 @@ class NewsViewModel(
     }
 
     fun toggleRead(newsId: String) {
-        _uiState.update { current ->
-            val updated = current.newsItems.map { item ->
-                if (item.newsData.id == newsId) item.copy(isRead = !item.isRead) else item
+        viewModelScope.launch {
+            repository.asRead(newsId)
+            val nowRead = repository.isRead(newsId)
+            _uiState.update { current ->
+                val updated = current.newsItems.map { item ->
+                    if (item.newsData.id == newsId) item.copy(isRead = nowRead) else item
+                }
+                current.copy(newsItems = updated)
             }
-            current.copy(newsItems = updated)
         }
     }
 
     fun toggleFavorite(newsId: String) {
         viewModelScope.launch {
-            repository.addFavorite(newsId)
+            repository.addFavorite(newsId)  // ← Только добавляет, не переключает!
             _uiState.update { current ->
                 val updated = current.newsItems.map { item ->
                     if (item.newsData.id == newsId) item.copy(isFavorite = !item.isFavorite) else item

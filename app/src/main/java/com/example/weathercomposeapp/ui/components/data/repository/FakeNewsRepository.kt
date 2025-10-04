@@ -1,10 +1,14 @@
 package com.example.weathercomposeapp.ui.components.data.repository
 
+import androidx.compose.runtime.mutableStateOf
 import com.example.weathercomposeapp.ui.components.data.models.NewsData
 import com.example.weathercomposeapp.R
 import kotlinx.coroutines.delay
 
 object FakeNewsRepository : NewsRepository {
+
+    private val readIds = mutableSetOf<String>()
+
     private val fakeNews = listOf(
         NewsData(
             id = "1",
@@ -48,6 +52,19 @@ object FakeNewsRepository : NewsRepository {
     }
 
     override suspend fun addFavorite(newsId: String) {
+        favoriteIds.add(newsId)
+    }
+
+    override suspend fun removeFavorite(newsId: String) {
+        favoriteIds.remove(newsId)
+    }
+
+    override suspend fun getFavorites(): List<NewsData> {
+        delay(100)
+        return fakeNews.filter { favoriteIds.contains(it.id) }
+    }
+
+    override suspend fun toggleFavorite(newsId: String) {
         if (favoriteIds.contains(newsId)) {
             favoriteIds.remove(newsId)
         } else {
@@ -55,8 +72,20 @@ object FakeNewsRepository : NewsRepository {
         }
     }
 
-    override suspend fun getFavorites(): List<NewsData> {
-        delay(200)
-        return fakeNews.filter { favoriteIds.contains(it.id) }
+
+    override suspend fun isFavorite(newsId: String): Boolean {
+        return favoriteIds.contains(newsId)
+    }
+
+    override suspend fun asRead(newsId: String) {
+        if (readIds.contains(newsId)) {
+            readIds.remove(newsId)
+        } else {
+            readIds.add(newsId)
+        }
+    }
+
+    override suspend fun isRead(newsId: String): Boolean {
+        return readIds.contains(newsId)
     }
 }

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
 }
 
 android {
@@ -40,6 +41,11 @@ android {
 }
 
 dependencies {
+    // Room components
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
     // Decompose
     implementation("com.arkivanov.decompose:decompose:2.1.0")
     implementation("com.arkivanov.decompose:extensions-compose-jetpack:2.1.0")

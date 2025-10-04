@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FavoriteViewModel(
-    private val repository: NewsRepository = FakeNewsRepository
+    private val repository: NewsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NewsUiState(isLoading = true))
@@ -39,14 +39,13 @@ class FavoriteViewModel(
 
     fun loadFavorites() {
         viewModelScope.launch {
-            val favoriteNews = repository.getFavorites()
-            val items = favoriteNews.map { newsData ->
+            val favoriteNews = repository.getFavorites().map { news ->
                 NewsItemUiState(
-                    newsData = newsData,
+                    newsData = news,
                     isFavorite = true
                 )
             }
-            _uiState.value = NewsUiState(newsItems = items)
+            _uiState.value = NewsUiState(newsItems = favoriteNews)
         }
     }
 
@@ -54,16 +53,25 @@ class FavoriteViewModel(
         _selectedTag.value = tag
         viewModelScope.launch {
             val favoriteNews = repository.getFavorites()
-            val items = favoriteNews.map { NewsItemUiState(it, isFavorite = true) }
-            val filtered = if (tag == "Все") items else items.filter { it.newsData.tags.contains(tag) }
+            val items = favoriteNews.map { news ->
+                NewsItemUiState(
+                    newsData = news,
+                    isFavorite = true
+                )
+            }
+            val filtered = if (tag == "Все") items else items.filter {
+                it.newsData.tags.contains(tag)
+            }
             _uiState.value = NewsUiState(newsItems = filtered)
         }
     }
 
     fun toggleFavorite(newsId: String) {
         viewModelScope.launch {
-            repository.addFavorite(newsId)
+            repository.toggleFavorite(newsId)
             loadFavorites()
         }
     }
+
+
 }

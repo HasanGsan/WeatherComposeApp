@@ -42,13 +42,12 @@ import com.example.weathercomposeapp.ui.components.data.uiState.items.NewsItemUi
 import com.example.weathercomposeapp.ui.theme.BoxColor
 
 @Composable
-fun FavoriteCard(
+fun favoriteCard(
     newsItem: NewsItemUiState,
     onToggleFavorite: (String) -> Unit,
     modifier: Modifier = Modifier
-) {
+){
     var isRemoving by remember { mutableStateOf(false) }
-    var showFilledHeart by remember { mutableStateOf(false) }
 
     val alpha by animateFloatAsState(
         targetValue = if (isRemoving) 0f else 1f,
@@ -90,7 +89,11 @@ fun FavoriteCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp)
+            ) {
                 Text(
                     text = newsItem.newsData.title,
                     maxLines = 1,
@@ -110,21 +113,16 @@ fun FavoriteCard(
                         )
                         .padding(horizontal = 6.dp, vertical = 6.dp)
                 ) {
-
                     Text(
                         text = newsItem.newsData.tags,
                         color = Color.White,
                         fontSize = 14.sp
                     )
                 }
-
             }
-
-            Spacer(modifier = Modifier.width(32.dp))
 
             IconButton(
                 onClick = {
-                    showFilledHeart = true
                     isRemoving = true
                     onToggleFavorite(newsItem.newsData.id)
                 },
@@ -132,7 +130,9 @@ fun FavoriteCard(
                     .size(28.dp),
             ) {
                 Icon(
-                    painter = painterResource(id = if (showFilledHeart) R.drawable.ic_favorite_border else R.drawable.ic_favorite_white),
+                    painter = painterResource(
+                        id = if (newsItem.isFavorite) R.drawable.ic_favorite_white else R.drawable.ic_favorite_border
+                    ),
                     tint = Color.White,
                     contentDescription = "Добавить в избранное",
                     modifier = Modifier.size(28.dp)
