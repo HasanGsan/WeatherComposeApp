@@ -56,9 +56,9 @@ fun FavoriteScreen(context: Context = LocalContext.current){
     val selectedTag = viewModel.selectedTag.collectAsState().value
     val tags = viewModel.allTags.collectAsState().value
 
-    LaunchedEffect(Unit) {
-        viewModel.loadFavorites()
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.loadFavorites()
+//    }
 
     Column(
         modifier = Modifier.fillMaxSize().background(BlackBackground).padding(horizontal = 10.dp)
@@ -78,7 +78,6 @@ fun FavoriteScreen(context: Context = LocalContext.current){
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             tags.forEach { tag ->

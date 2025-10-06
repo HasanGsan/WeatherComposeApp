@@ -42,12 +42,10 @@ object FakeNewsRepository : NewsRepository {
     private val favoriteIds = mutableSetOf<String>()
 
     override suspend fun getNews(): List<NewsData> {
-        delay(1000)
         return fakeNews
     }
 
     override suspend fun getNewsByCategory(category: String): List<NewsData> {
-        delay(500)
         return if (category == "Все"){ fakeNews } else { fakeNews.filter {it.postCategory == category} }
     }
 
@@ -60,7 +58,6 @@ object FakeNewsRepository : NewsRepository {
     }
 
     override suspend fun getFavorites(): List<NewsData> {
-        delay(100)
         return fakeNews.filter { favoriteIds.contains(it.id) }
     }
 

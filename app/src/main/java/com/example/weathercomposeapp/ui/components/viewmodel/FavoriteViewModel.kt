@@ -6,10 +6,14 @@ import com.example.weathercomposeapp.ui.components.data.repository.FakeNewsRepos
 import com.example.weathercomposeapp.ui.components.data.repository.NewsRepository
 import com.example.weathercomposeapp.ui.components.data.uiState.NewsUiState
 import com.example.weathercomposeapp.ui.components.data.uiState.items.NewsItemUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 
 class FavoriteViewModel(
     private val repository: NewsRepository
@@ -25,53 +29,68 @@ class FavoriteViewModel(
     val allTags: StateFlow<List<String>> = _allTags.asStateFlow()
 
     init {
-        loadFavorites()
-        loadTags()
+        loadInitialData()
     }
 
-    private fun loadTags() {
-        viewModelScope.launch {
-            val allNews = repository.getNews()
-            val tags = allNews.map { it.tags }.distinct()
-            _allTags.value = listOf("Все") + tags
-        }
-    }
+    private fun loadInitialData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val startTime = System.currentTimeMillis()
+            println("DEBUG: Начало загрузки в ${System.currentTimeMillis()}")
 
-    fun loadFavorites() {
-        viewModelScope.launch {
-            val favoriteNews = repository.getFavorites().map { news ->
-                NewsItemUiState(
-                    newsData = news,
-                    isFavorite = true
-                )
+            try {
+                val favoritesDeferred = async { repository.getFavorites() }
+                val tagsDeferred = async {
+                    val allNews =  repository.getNews()
+                    allNews.map {it.tags}.distinct()
+                }
+
+                val favorite = favoritesDeferred.await()
+                val tags = tagsDeferred.await()
+
+                println("DEBUG: Данные получены за ${System.currentTimeMillis() - startTime}ms")
+
+                withContext(Dispatchers.Main) {
+                    println("DEBUG: Начало обновления UI в ${System.currentTimeMillis()}")
+                    _allTags.value = listOf("Все") + tags
+                    _uiState.value = NewsUiState(
+                        newsItems = favorite.map { news ->
+                            NewsItemUiState(newsData = news, isFavorite = true)
+                        },
+                        isLoading = false
+                    )
+                    println("DEBUG: UI обновлен в ${System.currentTimeMillis()}")
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _uiState.value = NewsUiState(isLoading = false, errorMessage = "Ошибка загрузки новостей")
+                }
             }
-            _uiState.value = NewsUiState(newsItems = favoriteNews)
         }
     }
 
     fun selectTag(tag: String) {
         _selectedTag.value = tag
-        viewModelScope.launch {
-            val favoriteNews = repository.getFavorites()
-            val items = favoriteNews.map { news ->
-                NewsItemUiState(
-                    newsData = news,
-                    isFavorite = true
-                )
-            }
-            val filtered = if (tag == "Все") items else items.filter {
-                it.newsData.tags.contains(tag)
-            }
-            _uiState.value = NewsUiState(newsItems = filtered)
+        viewModelScope.launch(Dispatchers.IO) {
+            updateCurrentList()
         }
     }
 
     fun toggleFavorite(newsId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.toggleFavorite(newsId)
-            loadFavorites()
+            updateCurrentList()
         }
     }
 
-
+    private suspend fun updateCurrentList() {
+        val currentTag = _selectedTag.value
+        val favoriteNews = repository.getFavorites()
+        val items = favoriteNews.map { news ->
+            NewsItemUiState(newsData = news, isFavorite = true)
+        }
+        val filtered = if(currentTag == "Все") items else  items.filter {
+            it.newsData.tags.contains(currentTag)
+        }
+        _uiState.value = NewsUiState(newsItems = filtered)
+    }
 }
